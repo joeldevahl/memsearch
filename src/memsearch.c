@@ -163,33 +163,36 @@ void memsearch_find(const struct memsearch* memsearch, const char* cmp, memsearc
 	int cmp_len = strlen(cmp);
 	for(i = 0; i < num_files; ++i)
 	{
-		int col = 1;
-		int line = 1;
-		const char* ptr = files[i].content;
-		const char* line_start = ptr;
-		while(*ptr != '\0')
+		if(strstr( files[i].content, cmp ) != NULL)
 		{
-			if(strncmp(ptr, cmp, cmp_len) == 0)
+			int col = 1;
+			int line = 1;
+			const char* ptr = files[i].content;
+			const char* line_start = ptr;
+			while(*ptr != '\0')
 			{
-				int line_len = strcspn(line_start, "\n\r");
-				if(callback)
-					callback(callback_context, files[i].filename, line_start, line, col);
+				if(strncmp(ptr, cmp, cmp_len) == 0)
+				{
+					int line_len = strcspn(line_start, "\n\r");
+					if(callback)
+						callback(callback_context, files[i].filename, line_start, line, col);
+					else
+						printf("%s(%d): %.*s\n", files[i].filename, line, line_len, line_start);
+					col = line_len;
+					ptr = line_start + line_len;
+				}
+				else if(*ptr == '\n')
+				{
+					++line;
+					col = 1;
+					++ptr;
+					line_start = ptr;
+				}
 				else
-					printf("%s(%d): %.*s\n", files[i].filename, line, line_len, line_start);
-				col = line_len;
-				ptr = line_start + line_len;
-			}
-			else if(*ptr == '\n')
-			{
-				++line;
-				col = 1;
-				++ptr;
-				line_start = ptr;
-			}
-			else
-			{
-				++col;
-				++ptr;
+				{
+					++col;
+					++ptr;
+				}
 			}
 		}
 	}
