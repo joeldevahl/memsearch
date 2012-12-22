@@ -29,6 +29,10 @@ struct file* file_open(const char* file_name, enum file_open_mode mode)
 	}
 
 	file = fopen(file_name, flags);
+	if(file == NULL)
+	{
+		fprintf(stderr, "Could not open file: \"%s\"\n", file_name);	
+	}
 	ASSERT(file, "Could not open file\n");
 	return (struct file*)file;
 }
@@ -66,6 +70,7 @@ void* file_open_read_all(const char* file_name, struct allocator* allocator)
 	size = file_size(file);
 	data = ALLOC(allocator, size, 16);
 	file_read(file, data, size);
+	file_close(file);
 
 	return data;
 }
@@ -80,6 +85,7 @@ char* file_open_read_all_text(const char* file_name, struct allocator* allocator
 	data = (char*)ALLOC(allocator, size+1, 16);
 	file_read(file, data, size);
 	data[size] = '\0';
+	file_close(file);
 
 	return data;
 }
