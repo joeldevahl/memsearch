@@ -142,7 +142,8 @@ void memsearch_add_dir(struct memsearch* memsearch, const char* dirname, const c
 				for(i = 0; i < num_exts; ++i)
 				{
 					int len = strlen(exts[i]);
-					if(strcmp(dp->d_name + dp->d_namlen - len, exts[i]) == 0)
+					int namelen = strlen(dp->d_name);
+					if(strcmp(dp->d_name + namelen - len, exts[i]) == 0)
 					{
 						memsearch_add_file_internal(memsearch, buf, callback, callback_context);
 					}
